@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:meals_app/dummy_data.dart';
 
 import '../models/meal.dart';
 import '../widgets/meal_item.dart';
 
 class CategoryMealsScreen extends StatefulWidget {
   static const routeName = '/category_meals';
-
-  const CategoryMealsScreen({Key? key}) : super(key: key);
+  final List<Meal> availableMeals;
+  const CategoryMealsScreen({Key? key, required this.availableMeals,}) : super(key: key);
 
   @override
   State<CategoryMealsScreen> createState() => _CategoryMealsScreenState();
@@ -16,7 +15,7 @@ class CategoryMealsScreen extends StatefulWidget {
 class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
   String? categoryTitle;
   late List<Meal> displayedMeals;
-  var loadInitData = false;
+  var _loadInitData = false;
 
   @override
   void initState() {
@@ -25,26 +24,26 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
   }
   @override
   void didChangeDependencies() {
-    if(!loadInitData) {
+    if(!_loadInitData) {
       final routeArgs = ModalRoute
           .of(context)
           ?.settings
           .arguments as Map<String, String>;
       final categoryId = routeArgs['id'];
       categoryTitle = routeArgs['title'];
-      displayedMeals = DUMMY_MEALS.where((meal) {
+      displayedMeals = widget.availableMeals.where((meal) {
         return meal.categories.contains(categoryId);
       }).toList();
-      loadInitData = true;
+      _loadInitData = true;
     }
     super.didChangeDependencies();
   }
 
-  void removeItem(String mealId){
+  /*void _removeMeal(dynamic mealId){
     setState(() {
-      displayedMeals.where((meal) => meal.id == mealId);
+      displayedMeals.removeWhere((meal) => meal.id == mealId);
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +60,9 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
             duration: displayedMeals[index].duration,
             affordability: displayedMeals[index].affordability,
             title: displayedMeals[index].title,
-            id: displayedMeals[index].id, removeItem: (String ) {  },
+            id: displayedMeals[index].id,
+            // removeItem: _removeMeal,
+
           );
         },
         itemCount: displayedMeals.length,

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/dummy_data.dart';
+import 'package:meals_app/dialog.dart';
 
 class MealDetailsScreen extends StatelessWidget {
   static const routeName = '/meal_details';
+  final Function(String) toggleFavorite;
+  final Function(String) isFavorite;
 
-  const MealDetailsScreen({Key? key}) : super(key: key);
+  const MealDetailsScreen(
+      {Key? key, required this.toggleFavorite, required this.isFavorite})
+      : super(key: key);
 
   Widget buildSectionTitle(BuildContext context, String text) {
     return Container(
@@ -78,11 +83,10 @@ class MealDetailsScreen extends StatelessWidget {
                     ListTile(
                       leading: CircleAvatar(
                         backgroundColor: Theme.of(context).colorScheme.primary,
-                        child: Text('# ${(index + 1)}',
+                        child: Text(
+                          '# ${(index + 1)}',
                           style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600
-                          ),
+                              color: Colors.white, fontWeight: FontWeight.w600),
                         ),
                       ),
                       title: Text(selectedMeal.steps[index]),
@@ -102,11 +106,12 @@ class MealDetailsScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.of(context).pop(mealID);
+        onPressed: () {
+          toggleFavorite(mealID);
+          isFavorite(mealID) ? MyDialog.buildDialog(context, 'Successfully added to favorites') : MyDialog.buildDialog(context, 'Successfully removed from favorites');
         },
-        child: const Icon(
-          Icons.delete
+        child: Icon(
+          isFavorite(mealID) ? Icons.star : Icons.star_border,
         ),
       ),
     );
